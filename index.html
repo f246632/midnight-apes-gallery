@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midnight Apes - Collection</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="https://bistro-pirati.eatbu.com/" target="_blank" class="pizza-link" title="Visit Pizzeria Pirati in Rijeka, Croatia - Buy pizza, get NFT!">
+                    <div class="pizza-icon">🍕</div>
+                    <span class="pizza-text">Pirati Pizzeria</span>
+                </a>
+                <div class="title-section">
+                    <h1 class="title" id="titleClickable">Midnight Apes</h1>
+                    <p class="subtitle">A collection of 14,745 unique digital artifacts</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="filters">
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search by ID, traits, rarity, location..." class="search-input">
+                </div>
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="random">Random 100</button>
+                    <span class="count-display">Showing <span id="currentCount">0</span> of <span id="totalCount">14745</span></span>
+                </div>
+            </div>
+
+            <div class="loading" id="loadingScreen">
+                <div class="loading-spinner"></div>
+                <p>Loading Midnight Apes...</p>
+            </div>
+
+            <div class="gallery" id="gallery">
+                <!-- Images will be dynamically loaded here -->
+            </div>
+
+            <div class="load-more-container">
+                <button id="loadMoreBtn" class="load-more-btn">Load More</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Main overlay for poems and images -->
+    <div class="overlay" id="overlay">
+        <div class="overlay-content" id="overlayContent">
+            <div class="close-btn" id="closeBtn">&times;</div>
+            <div class="overlay-image-container" id="overlayImageContainer">
+                <img id="overlayImage" class="overlay-image" alt="Midnight Ape">
+            </div>
+            <div class="poem-content" id="poemContent">
+                <h3 class="poem-title" id="poemTitle">Lore Poem</h3>
+                <div class="poem-text" id="poemText"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info overlay for collection facts -->
+    <div class="overlay info-overlay" id="infoOverlay">
+        <div class="overlay-content info-content">
+            <div class="close-btn" id="infoCloseBtn">&times;</div>
+            <div class="info-header">
+                <h2>🌑 Midnight Apes Collection</h2>
+                <p class="info-subtitle">Digital artifacts on the blockchain</p>
+            </div>
+            <div class="info-body">
+                <div class="info-section">
+                    <h3>📊 Collection Facts</h3>
+                    <ul class="info-list">
+                        <li>🎨 One of the first vibe coded collections from 2023</li>
+                        <li>🖼️ 14,745 unique digital artifacts</li>
+                        <li>📜 Each ape comes with unique lore poems</li>
+                        <li>✅ Owners have full rights to use images</li>
+                        <li>🚧 Currently under development</li>
+                    </ul>
+                </div>
+
+                <div class="info-section">
+                    <h3>🔗 Official Links</h3>
+                    <div class="links-grid">
+                        <a href="https://x.com/notfortalk" target="_blank" class="info-link">
+                            <span class="link-icon">👨‍💻</span>
+                            <span>Creator</span>
+                        </a>
+                        <a href="https://x.com/MidnightApes" target="_blank" class="info-link">
+                            <span class="link-icon">🐦</span>
+                            <span>Official Twitter</span>
+                        </a>
+                        <a href="mailto:midnightapes@proton.me" class="info-link">
+                            <span class="link-icon">📧</span>
+                            <span>Contact</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>🍕 Pizza Shop Connection</h3>
+                    <div class="pizza-info">
+                        <p class="info-description">
+                            <strong>Pizzeria Pirati</strong> in Rijeka, Croatia is the official pizza shop of Midnight Apes!
+                            When you buy pizza there, you become an owner of images from this collection.
+                        </p>
+                        <a href="https://bistro-pirati.eatbu.com/" target="_blank" class="pizza-cta">
+                            <span class="pizza-emoji">🍕</span>
+                            Visit Pirati Pizzeria
+                            <span class="location">📍 Rijeka, Croatia</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>🌟 About the Art</h3>
+                    <p class="info-description">
+                        Midnight Apes represents a unique fusion of algorithmic generation and poetic storytelling.
+                        Each ape carries its own mystical narrative, captured in both visual form and verse,
+                        creating a rich tapestry of digital mythology.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Midnight Apes Collection. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
