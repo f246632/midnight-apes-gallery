@@ -106,8 +106,8 @@ class MidnightApesGallery {
 
             // Load both CSV files directly (for GitHub Pages compatibility)
             const [imagesResponse, metadataResponse] = await Promise.all([
-                fetch('./data-images.csv'),
-                fetch('./data-metadata.csv')
+                fetch('data-images.csv'),
+                fetch('data-metadata.csv')
             ]);
 
             const imagesText = await imagesResponse.text();
