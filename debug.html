@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Midnight Apes</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #0a0a0a; color: white; }
+        .status { margin: 10px 0; padding: 10px; background: #1a1a1a; border-radius: 5px; }
+        .error { background: #ff4444; }
+        .success { background: #44ff44; color: black; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 20px; }
+        .item { background: #2a2a2a; border-radius: 8px; padding: 10px; }
+        .item img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🌑 Debug Midnight Apes Loading</h1>
+
+    <div id="status1" class="status">1. Starting...</div>
+    <div id="status2" class="status">2. Loading CSV files...</div>
+    <div id="status3" class="status">3. Parsing data...</div>
+    <div id="status4" class="status">4. Creating gallery...</div>
+
+    <div id="gallery" class="gallery"></div>
+
+    <script>
+        async function debugLoad() {
+            try {
+                // Step 1
+                document.getElementById('status1').textContent = '1. ✅ JavaScript started';
+                document.getElementById('status1').className = 'status success';
+
+                // Step 2 - Load CSV
+                document.getElementById('status2').textContent = '2. 🔄 Loading CSV files...';
+
+                const imagesResponse = await fetch('data-images.csv');
+                const metadataResponse = await fetch('data-metadata.csv');
+
+                const imagesText = await imagesResponse.text();
+                const metadataText = await metadataResponse.text();
+
+                document.getElementById('status2').textContent = `2. ✅ CSV loaded - Images: ${imagesText.length} chars, Metadata: ${metadataText.length} chars`;
+                document.getElementById('status2').className = 'status success';
+
+                // Step 3 - Parse data
+                document.getElementById('status3').textContent = '3. 🔄 Parsing CSV data...';
+
+                const imageLines = imagesText.split('\n').slice(1).filter(line => line.trim()); // Skip header, remove empty
+                const metadataLines = metadataText.split('\n').slice(1).filter(line => line.trim());
+
+                const data = [];
+                const maxItems = Math.min(20, imageLines.length); // Show first 20 for testing
+
+                for (let i = 0; i < maxItems; i++) {
+                    const imageLine = imageLines[i];
+                    const metadataLine = metadataLines[i];
+
+                    if (imageLine && metadataLine) {
+                        const [imageName, imageUrl] = imageLine.split(',');
+                        const [metadataName, metadataUrl] = metadataLine.split(',');
+
+                        if (imageUrl && metadataUrl) {
+                            data.push({
+                                id: i,
+                                name: imageName?.replace('.jpeg', '').replace('image_', '#'),
+                                imageUrl: imageUrl.trim(),
+                                metadataUrl: metadataUrl.trim()
+                            });
+                        }
+                    }
+                }
+
+                document.getElementById('status3').textContent = `3. ✅ Parsed ${data.length} items from ${imageLines.length} images, ${metadataLines.length} metadata`;
+                document.getElementById('status3').className = 'status success';
+
+                // Step 4 - Create gallery
+                document.getElementById('status4').textContent = '4. 🔄 Creating gallery...';
+
+                const gallery = document.getElementById('gallery');
+
+                data.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'item';
+                    div.innerHTML = `
+                        <img src="${item.imageUrl}" alt="${item.name}" loading="lazy">
+                        <div>${item.name}</div>
+                        <div style="font-size: 12px; color: #888;">ID: ${item.id}</div>
+                    `;
+                    gallery.appendChild(div);
+                });
+
+                document.getElementById('status4').textContent = `4. ✅ Gallery created with ${data.length} images`;
+                document.getElementById('status4').className = 'status success';
+
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('status2').textContent = `❌ ERROR: ${error.message}`;
+                document.getElementById('status2').className = 'status error';
+            }
+        }
+
+        debugLoad();
+    </script>
+</body>
+</html>
