@@ -1,8 +1,12 @@
 # 🌑 Midnight Apes Gallery
 
-A beautiful, minimalistic website showcasing the Midnight Apes NFT collection with 14,745 unique digital artifacts stored on Arweave.
+A beautiful, minimalistic website showcasing the Midnight Apes NFT collection with 14,745 unique digital artifacts stored on Arweave. Features an integrated connection to Pizzeria Pirati in Rijeka, Croatia.
 
-## Features
+## 🚀 Live Demo
+
+Visit the live gallery: **https://f246632.github.io/midnight-apes-gallery/**
+
+## ✨ Features
 
 - **Responsive Grid Layout**: Beautiful masonry-style gallery that adapts to any screen size
 - **Interactive Hover Effects**: Smooth animations and preview of lore poems on hover
