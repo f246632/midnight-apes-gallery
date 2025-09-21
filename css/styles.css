@@ -564,6 +564,40 @@ body {
     opacity: 0.9;
 }
 
+/* Print Studio */
+.print-info {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+}
+
+.print-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: linear-gradient(135deg, #4a9eff 0%, #667eea 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.print-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(74, 158, 255, 0.4);
+}
+
+.print-emoji {
+    font-size: 18px;
+    animation: bounce 2s infinite;
+}
+
 /* Footer */
 .footer {
     background: var(--bg-secondary);
