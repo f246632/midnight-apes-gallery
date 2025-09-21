@@ -104,17 +104,17 @@ class MidnightApesGallery {
         try {
             this.showLoading(true);
 
-            // Load both CSV files via API
+            // Load both CSV files directly (for GitHub Pages compatibility)
             const [imagesResponse, metadataResponse] = await Promise.all([
-                fetch('/api/images'),
-                fetch('/api/metadata')
+                fetch('./data-images.csv'),
+                fetch('./data-metadata.csv')
             ]);
 
-            const imagesResult = await imagesResponse.json();
-            const metadataResult = await metadataResponse.json();
+            const imagesText = await imagesResponse.text();
+            const metadataText = await metadataResponse.text();
 
             // Parse CSV data
-            this.imagesData = this.parseCSV(imagesResult.data, metadataResult.data);
+            this.imagesData = this.parseCSV(imagesText, metadataText);
 
             this.updateCount();
             this.showLoading(false);
@@ -122,7 +122,7 @@ class MidnightApesGallery {
         } catch (error) {
             console.error('Error loading data:', error);
             this.showLoading(false);
-            this.showError('Failed to load collection data. Make sure the server is running.');
+            this.showError('Failed to load collection data. CSV files may be missing.');
         }
     }
 
@@ -204,7 +204,7 @@ class MidnightApesGallery {
 
                 if (!this.searchIndex.has(item.id)) {
                     try {
-                        const response = await fetch(`/api/proxy?url=${encodeURIComponent(item.metadataUrl)}`);
+                        const response = await fetch(item.metadataUrl);
                         const metadata = await response.json();
 
                         this.metadataCache.set(item.id, metadata);
@@ -364,8 +364,8 @@ class MidnightApesGallery {
             let metadata = this.metadataCache.get(item.id);
 
             if (!metadata) {
-                // Use proxy to avoid CORS issues
-                const response = await fetch(`/api/proxy?url=${encodeURIComponent(item.metadataUrl)}`);
+                // Fetch directly from Arweave (GitHub Pages doesn't need proxy)
+                const response = await fetch(item.metadataUrl);
                 metadata = await response.json();
                 this.metadataCache.set(item.id, metadata);
 
