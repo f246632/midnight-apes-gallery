@@ -120,6 +120,7 @@
             border-radius: 12px;
             max-width: 600px;
             margin: 0 auto;
+            cursor: pointer;
         }
 
         .poem-title {
@@ -272,12 +273,6 @@
             if (overlayState === 'closed') {
                 // First click: show poem only
                 await showPoemOverlay(item);
-            } else if (overlayState === 'poem-only' && currentOverlayItem?.id === item.id) {
-                // Second click on same item: show image only
-                showImageOnly();
-            } else if (overlayState === 'image-only' && currentOverlayItem?.id === item.id) {
-                // Third click on same item: close
-                hideOverlay();
             } else {
                 // Click on different item: show poem only
                 await showPoemOverlay(item);
@@ -365,10 +360,18 @@
             }
         });
 
-        // Allow clicking on the overlay image to cycle through states
+        // Click on poem content to show big image
+        document.getElementById('poemContent').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (overlayState === 'poem-only') {
+                showImageOnly();
+            }
+        });
+
+        // Click on big image to close
         document.getElementById('overlayImage').addEventListener('click', (e) => {
             e.stopPropagation();
-            if (currentOverlayItem && overlayState === 'image-only') {
+            if (overlayState === 'image-only') {
                 hideOverlay();
             }
         });
