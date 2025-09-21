@@ -64,6 +64,83 @@
             color: #888;
             margin-top: 5px;
         }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overlay-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+            text-align: center;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .overlay-image-container {
+            margin-bottom: 20px;
+        }
+
+        .overlay-image {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: 12px;
+        }
+
+        .poem-content {
+            background: rgba(16, 16, 16, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .poem-title {
+            color: #4a9eff;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .poem-text {
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        /* Image-only mode */
+        .overlay-content.image-only .poem-content {
+            display: none;
+        }
+
+        .overlay-content.image-only .overlay-image {
+            max-height: 90vh;
+        }
     </style>
 </head>
 <body>
@@ -78,6 +155,20 @@
     <div id="status4" class="status">4. Creating gallery...</div>
 
     <div id="gallery" class="gallery"></div>
+
+    <!-- Overlay for poems and images -->
+    <div class="overlay" id="overlay">
+        <div class="overlay-content" id="overlayContent">
+            <div class="close-btn" id="closeBtn">&times;</div>
+            <div class="overlay-image-container" id="overlayImageContainer">
+                <img id="overlayImage" class="overlay-image" alt="Midnight Ape">
+            </div>
+            <div class="poem-content" id="poemContent">
+                <h3 class="poem-title" id="poemTitle">Loading...</h3>
+                <div class="poem-text" id="poemText"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         async function loadGallery() {
@@ -150,6 +241,12 @@
                         <div class="item-name">${item.name}</div>
                         <div class="item-id">ID: ${item.id}</div>
                     `;
+
+                    // Add click event for overlay
+                    div.addEventListener('click', () => {
+                        handleOverlayClick(item);
+                    });
+
                     gallery.appendChild(div);
                 });
 
@@ -164,6 +261,124 @@
                 document.getElementById('status2').className = 'status error';
             }
         }
+
+        // Overlay state management
+        let overlayState = 'closed'; // 'closed', 'poem-only', 'image-only'
+        let currentOverlayItem = null;
+        let metadataCache = new Map();
+
+        // Handle overlay click cycling
+        async function handleOverlayClick(item) {
+            if (overlayState === 'closed') {
+                // First click: show poem only
+                await showPoemOverlay(item);
+            } else if (overlayState === 'poem-only' && currentOverlayItem?.id === item.id) {
+                // Second click on same item: show image only
+                showImageOnly();
+            } else if (overlayState === 'image-only' && currentOverlayItem?.id === item.id) {
+                // Third click on same item: close
+                hideOverlay();
+            } else {
+                // Click on different item: show poem only
+                await showPoemOverlay(item);
+            }
+        }
+
+        async function showPoemOverlay(item) {
+            try {
+                console.log(`🔄 Loading metadata for item ${item.id}...`);
+
+                let metadata = metadataCache.get(item.id);
+
+                if (!metadata) {
+                    // Fetch metadata from Arweave
+                    const response = await fetch(item.metadataUrl);
+                    metadata = await response.json();
+                    metadataCache.set(item.id, metadata);
+                }
+
+                // Find the lore poem and emoji song in attributes
+                const lorePoem = metadata.attributes?.find(attr =>
+                    attr.trait_type === 'Lore Poem'
+                )?.value || 'No lore poem available for this Midnight Ape.';
+
+                const emojiSong = metadata.attributes?.find(attr =>
+                    attr.trait_type === 'Emoji Song'
+                )?.value || '🌑🦧✨';
+
+                // Update overlay content
+                document.getElementById('overlayImage').src = item.imageUrl;
+                document.getElementById('poemTitle').textContent = emojiSong;
+                document.getElementById('poemText').textContent = lorePoem;
+
+                // Show only poem (not image)
+                const overlayContent = document.getElementById('overlayContent');
+                overlayContent.classList.remove('image-only');
+                document.getElementById('overlayImageContainer').style.display = 'none';
+                document.getElementById('poemContent').style.display = 'block';
+
+                document.getElementById('overlay').classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                overlayState = 'poem-only';
+                currentOverlayItem = item;
+
+                console.log(`✅ Poem overlay shown for item ${item.id}`);
+
+            } catch (error) {
+                console.error('Error loading overlay:', error);
+                alert('Failed to load metadata.');
+            }
+        }
+
+        function showImageOnly() {
+            const overlayContent = document.getElementById('overlayContent');
+            overlayContent.classList.add('image-only');
+            document.getElementById('overlayImageContainer').style.display = 'block';
+            document.getElementById('poemContent').style.display = 'none';
+            overlayState = 'image-only';
+            console.log('✅ Switched to image-only mode');
+        }
+
+        function hideOverlay() {
+            document.getElementById('overlay').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            overlayState = 'closed';
+            currentOverlayItem = null;
+
+            // Reset overlay to default state
+            const overlayContent = document.getElementById('overlayContent');
+            overlayContent.classList.remove('image-only');
+            document.getElementById('overlayImageContainer').style.display = 'block';
+            document.getElementById('poemContent').style.display = 'block';
+            console.log('✅ Overlay closed');
+        }
+
+        // Event listeners for overlay controls
+        document.getElementById('closeBtn').addEventListener('click', () => {
+            hideOverlay();
+        });
+
+        document.getElementById('overlay').addEventListener('click', (e) => {
+            if (e.target.id === 'overlay') {
+                hideOverlay();
+            }
+        });
+
+        // Allow clicking on the overlay image to cycle through states
+        document.getElementById('overlayImage').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentOverlayItem && overlayState === 'image-only') {
+                hideOverlay();
+            }
+        });
+
+        // Escape key to close overlay
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                hideOverlay();
+            }
+        });
 
         // Start immediately when script loads
         loadGallery();
