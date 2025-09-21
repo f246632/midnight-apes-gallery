@@ -103,6 +103,7 @@ class MidnightApesGallery {
     async loadData() {
         try {
             this.showLoading(true);
+            console.log('🔄 Starting to load CSV data...');
 
             // Load both CSV files directly (for GitHub Pages compatibility)
             const [imagesResponse, metadataResponse] = await Promise.all([
@@ -110,8 +111,12 @@ class MidnightApesGallery {
                 fetch('data-metadata.csv')
             ]);
 
+            console.log('📡 CSV responses received');
+
             const imagesText = await imagesResponse.text();
             const metadataText = await metadataResponse.text();
+
+            console.log(`📄 CSV loaded - Images: ${imagesText.length} chars, Metadata: ${metadataText.length} chars`);
 
             // Parse CSV data
             this.imagesData = this.parseCSV(imagesText, metadataText);
@@ -119,18 +124,22 @@ class MidnightApesGallery {
             this.updateCount();
             this.showLoading(false);
 
+            console.log('✅ Data loading complete, starting gallery render...');
+
         } catch (error) {
-            console.error('Error loading data:', error);
+            console.error('❌ Error loading data:', error);
             this.showLoading(false);
             this.showError('Failed to load collection data. CSV files may be missing.');
         }
     }
 
     parseCSV(imagesText, metadataText) {
-        const imageLines = imagesText.split('\n').slice(1); // Skip header
-        const metadataLines = metadataText.split('\n').slice(1); // Skip header
+        const imageLines = imagesText.split('\n').slice(1).filter(line => line.trim()); // Skip header, remove empty
+        const metadataLines = metadataText.split('\n').slice(1).filter(line => line.trim()); // Skip header, remove empty
 
         const data = [];
+
+        console.log(`📊 Parsing CSV: ${imageLines.length} image lines, ${metadataLines.length} metadata lines`);
 
         for (let i = 0; i < Math.min(imageLines.length, metadataLines.length); i++) {
             const imageLine = imageLines[i].trim();
@@ -152,6 +161,7 @@ class MidnightApesGallery {
             }
         }
 
+        console.log(`✅ Parsed ${data.length} items successfully`);
         return data;
     }
 
