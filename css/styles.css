@@ -322,6 +322,7 @@ body {
 
 .poem-content {
     width: 100%;
+    cursor: pointer;
 }
 
 .overlay.active .overlay-content {

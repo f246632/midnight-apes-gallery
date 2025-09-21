@@ -2,7 +2,7 @@ class MidnightApesGallery {
     constructor() {
         this.imagesData = [];
         this.metadataCache = new Map();
-        this.searchIndex = new Map(); // For quick searching
+        this.searchIndex = new Map();
         this.currentPage = 0;
         this.itemsPerPage = 50;
         this.isLoading = false;
@@ -33,7 +33,7 @@ class MidnightApesGallery {
                 this.currentPage = 0;
                 this.displayedItems = [];
                 this.renderGallery();
-            }, 300); // 300ms debounce
+            }, 300);
         });
 
         // Filter buttons
@@ -72,11 +72,19 @@ class MidnightApesGallery {
             }
         });
 
-        // Allow clicking on the overlay image to cycle through states
+        // Click on poem content to show big image
+        document.getElementById('poemContent').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (this.overlayState === 'poem-only') {
+                this.showImageOnly();
+            }
+        });
+
+        // Click on big image to close
         document.getElementById('overlayImage').addEventListener('click', (e) => {
             e.stopPropagation();
-            if (this.currentOverlayItem) {
-                this.handleOverlayImageClick();
+            if (this.overlayState === 'image-only') {
+                this.hideOverlay();
             }
         });
 
@@ -118,7 +126,7 @@ class MidnightApesGallery {
 
             console.log(`📄 CSV loaded - Images: ${imagesText.length} chars, Metadata: ${metadataText.length} chars`);
 
-            // Parse CSV data
+            // Parse CSV data using the working method from test page
             this.imagesData = this.parseCSV(imagesText, metadataText);
 
             this.updateCount();
@@ -134,16 +142,17 @@ class MidnightApesGallery {
     }
 
     parseCSV(imagesText, metadataText) {
-        const imageLines = imagesText.split('\n').slice(1).filter(line => line.trim()); // Skip header, remove empty
-        const metadataLines = metadataText.split('\n').slice(1).filter(line => line.trim()); // Skip header, remove empty
+        // Use the exact same parsing method that works in the test page
+        const imageLines = imagesText.split('\n').slice(1).filter(line => line.trim());
+        const metadataLines = metadataText.split('\n').slice(1).filter(line => line.trim());
 
         const data = [];
 
         console.log(`📊 Parsing CSV: ${imageLines.length} image lines, ${metadataLines.length} metadata lines`);
 
         for (let i = 0; i < Math.min(imageLines.length, metadataLines.length); i++) {
-            const imageLine = imageLines[i].trim();
-            const metadataLine = metadataLines[i].trim();
+            const imageLine = imageLines[i];
+            const metadataLine = metadataLines[i];
 
             if (imageLine && metadataLine) {
                 const [imageName, imageUrl] = imageLine.split(',');
@@ -168,19 +177,16 @@ class MidnightApesGallery {
     // Index metadata for quick searching
     indexMetadata(id, metadata) {
         try {
-            // Create searchable text from all attributes
             let searchableText = '';
 
             if (metadata.attributes) {
                 metadata.attributes.forEach(attr => {
                     if (attr.trait_type && attr.value) {
-                        // Add trait type and value to searchable text
                         searchableText += `${attr.trait_type.toLowerCase()} ${attr.value.toString().toLowerCase()} `;
                     }
                 });
             }
 
-            // Add name and description if available
             if (metadata.name) {
                 searchableText += metadata.name.toLowerCase() + ' ';
             }
@@ -188,7 +194,6 @@ class MidnightApesGallery {
                 searchableText += metadata.description.toLowerCase() + ' ';
             }
 
-            // Store in search index
             this.searchIndex.set(id, {
                 searchableText: searchableText.trim(),
                 metadata: metadata
@@ -207,7 +212,7 @@ class MidnightApesGallery {
         console.log('🔍 Starting background indexing for search...');
 
         try {
-            const itemsToIndex = this.imagesData.slice(0, 200); // Index first 200 silently
+            const itemsToIndex = this.imagesData.slice(0, 200);
 
             for (let i = 0; i < itemsToIndex.length; i++) {
                 const item = itemsToIndex[i];
@@ -220,7 +225,6 @@ class MidnightApesGallery {
                         this.metadataCache.set(item.id, metadata);
                         this.indexMetadata(item.id, metadata);
 
-                        // Longer delay to avoid overwhelming the server during background indexing
                         await new Promise(resolve => setTimeout(resolve, 100));
 
                     } catch (error) {
@@ -238,7 +242,6 @@ class MidnightApesGallery {
         this.isIndexing = false;
     }
 
-    // Show temporary message
     showMessage(message) {
         const gallery = document.getElementById('gallery');
         const messageDiv = document.createElement('div');
@@ -269,13 +272,11 @@ class MidnightApesGallery {
         // Apply search filter
         if (this.searchTerm) {
             filtered = filtered.filter(item => {
-                // Search by ID or name
                 if (item.name.toLowerCase().includes(this.searchTerm) ||
                     item.id.toString().includes(this.searchTerm)) {
                     return true;
                 }
 
-                // Search in indexed metadata if available
                 const indexedData = this.searchIndex.get(item.id);
                 if (indexedData) {
                     return indexedData.searchableText.includes(this.searchTerm);
@@ -287,7 +288,6 @@ class MidnightApesGallery {
 
         // Apply collection filter
         if (this.currentFilter === 'random') {
-            // Shuffle and take first 100
             const shuffled = [...filtered].sort(() => 0.5 - Math.random());
             filtered = shuffled.slice(0, 100);
         }
@@ -324,14 +324,12 @@ class MidnightApesGallery {
         div.className = 'gallery-item fade-in';
         div.dataset.id = item.id;
 
-        // Create image with loading placeholder
         const img = document.createElement('img');
         img.className = 'gallery-image';
         img.src = item.imageUrl;
         img.alt = item.name;
         img.loading = 'lazy';
 
-        // Create info section
         const info = document.createElement('div');
         info.className = 'gallery-info';
         info.innerHTML = `
@@ -342,7 +340,7 @@ class MidnightApesGallery {
         div.appendChild(img);
         div.appendChild(info);
 
-        // Add click event for overlay
+        // Add click event for overlay - use the working method from test page
         div.addEventListener('click', () => {
             this.handleOverlayClick(item);
         });
@@ -350,17 +348,11 @@ class MidnightApesGallery {
         return div;
     }
 
-    // Handle the click cycling: closed -> poem-only -> image-only -> closed
+    // Handle overlay click - simplified like the working test page
     async handleOverlayClick(item) {
         if (this.overlayState === 'closed') {
-            // First click: show poem only (like before)
+            // First click: show poem only
             await this.showPoemOverlay(item);
-        } else if (this.overlayState === 'poem-only' && this.currentOverlayItem?.id === item.id) {
-            // Second click on same item: show image only
-            this.showImageOnly();
-        } else if (this.overlayState === 'image-only' && this.currentOverlayItem?.id === item.id) {
-            // Third click on same item: close
-            this.hideOverlay();
         } else {
             // Click on different item: show poem only
             await this.showPoemOverlay(item);
@@ -374,12 +366,9 @@ class MidnightApesGallery {
             let metadata = this.metadataCache.get(item.id);
 
             if (!metadata) {
-                // Fetch directly from Arweave (GitHub Pages doesn't need proxy)
                 const response = await fetch(item.metadataUrl);
                 metadata = await response.json();
                 this.metadataCache.set(item.id, metadata);
-
-                // Index this metadata for search
                 this.indexMetadata(item.id, metadata);
             }
 
@@ -397,7 +386,7 @@ class MidnightApesGallery {
             document.getElementById('poemTitle').textContent = emojiSong;
             document.getElementById('poemText').textContent = lorePoem;
 
-            // Show only poem (like before)
+            // Show only poem (not image) - exact same as test page
             const overlayContent = document.getElementById('overlayContent');
             overlayContent.classList.remove('image-only');
             document.getElementById('overlayImageContainer').style.display = 'none';
@@ -414,14 +403,6 @@ class MidnightApesGallery {
             console.error('Error loading overlay:', error);
             this.showLoading(false);
             this.showError('Failed to load data.');
-        }
-    }
-
-    // Handle clicking on the overlay image itself
-    handleOverlayImageClick() {
-        if (this.overlayState === 'image-only') {
-            // Close overlay
-            this.hideOverlay();
         }
     }
 
