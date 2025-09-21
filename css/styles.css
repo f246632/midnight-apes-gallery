@@ -362,9 +362,18 @@ body {
     display: none !important;
 }
 
+.overlay-content.image-only .overlay-image-container {
+    background: rgba(16, 16, 16, 0.9);
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 .overlay-content.image-only .overlay-image {
-    max-height: 90vh !important;
-    max-width: 90vw !important;
+    max-height: 70vh !important;
+    max-width: 100% !important;
+    border-radius: 8px;
 }
 
 /* Info Overlay Styles */

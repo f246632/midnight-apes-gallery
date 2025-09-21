@@ -407,25 +407,11 @@ class MidnightApesGallery {
     }
 
     showImageOnly() {
-        console.log('🔄 Switching to image-only mode...');
         const overlayContent = document.getElementById('overlayContent');
-        const imageContainer = document.getElementById('overlayImageContainer');
-        const poemContent = document.getElementById('poemContent');
-
-        console.log('Before - imageContainer display:', imageContainer.style.display);
-        console.log('Before - poemContent display:', poemContent.style.display);
-        console.log('Before - overlayContent classes:', overlayContent.className);
-
         overlayContent.classList.add('image-only');
-        imageContainer.style.display = 'block';
-        poemContent.style.display = 'none';
-
-        console.log('After - imageContainer display:', imageContainer.style.display);
-        console.log('After - poemContent display:', poemContent.style.display);
-        console.log('After - overlayContent classes:', overlayContent.className);
-
+        document.getElementById('overlayImageContainer').style.display = 'block';
+        document.getElementById('poemContent').style.display = 'none';
         this.overlayState = 'image-only';
-        console.log('✅ Switched to image-only mode');
     }
 
     hideOverlay() {
