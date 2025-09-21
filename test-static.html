@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Static Loading</title>
+</head>
+<body>
+    <h1>Testing CSV Loading</h1>
+    <div id="status">Loading...</div>
+    <div id="count"></div>
+
+    <script>
+    async function test() {
+        try {
+            console.log('Fetching CSV files...');
+
+            const response1 = await fetch('data-images.csv');
+            const text1 = await response1.text();
+            console.log('Images CSV loaded:', text1.length, 'chars');
+
+            const response2 = await fetch('data-metadata.csv');
+            const text2 = await response2.text();
+            console.log('Metadata CSV loaded:', text2.length, 'chars');
+
+            const lines1 = text1.split('\n').length;
+            const lines2 = text2.split('\n').length;
+
+            document.getElementById('status').innerHTML = '✅ SUCCESS!';
+            document.getElementById('count').innerHTML = `Images: ${lines1} lines, Metadata: ${lines2} lines`;
+
+        } catch (error) {
+            console.error('Error:', error);
+            document.getElementById('status').innerHTML = '❌ ERROR: ' + error.message;
+        }
+    }
+
+    test();
+    </script>
+</body>
+</html>
